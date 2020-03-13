@@ -1,6 +1,5 @@
 version: '3'
 services:
-  # go application
   app:
     build:
       context: .
@@ -14,7 +13,6 @@ services:
     restart: on-failure
     entrypoint: sh -c './wait-for.sh db:3306 -t 60 -- CompileDaemon --build="go build -installsuffix 'static' -o /app ./cmd" --command=/app'
 
-  # mysql db
   db:
     image: mysql:5.7
     volumes:
@@ -25,8 +23,17 @@ services:
     ports:
       - "3306:3306"
 
+  redis:
+    image: redis:5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    volumes:
+      - redis-data:/data
+
+
 volumes:
   db_data:
+  redis-data:
 
 networks: 
   default:
